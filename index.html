@@ -27,9 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="ISCAE" />
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
@@ -1002,8 +1000,6 @@ async function loadPublicData() {
 }
 
 async function loadAdmins() {
-  // رؤساء التخصصات لا يطّلعون على المشرف الرئيسي ولا على بقية المشرفين
-  if (!isSuper()) { state.admins = state.me ? [state.me] : []; return; }
   const { data, error } = await db.from("admins").select("*").order("created_at");
   if (error) { console.error(error); return; }
   state.admins = data || [];
@@ -1242,7 +1238,7 @@ function syncHeader() {
 async function afterAuthChange(goDash) {
   syncHeader();
   if (state.me) {
-    await loadAdmins();
+    if (isSuper()) await loadAdmins();
     if (goDash) showDash();
   }
 }
@@ -1475,8 +1471,6 @@ async function moveStudent(id, dir) {
 
 /* ------------------------- 14. SPECIALTIES ------------------------- */
 function renderSpecialties(panel) {
-  // حماية إضافية: هذا القسم للمشرف الرئيسي فقط
-  if (!isSuper()) { state.tab = "overview"; return renderOverview(panel); }
   panel.innerHTML = `
     <div class="panel-head">
       <h2>${t("specialties_title_count", { n: state.specialties.length })}</h2>
@@ -1545,8 +1539,6 @@ async function deleteSpec(id) {
 
 /* ------------------------- 15. DEPARTMENT ADMINS ------------------------- */
 function renderAdminsTab(panel) {
-  // حماية إضافية: هذا القسم للمشرف الرئيسي فقط
-  if (!isSuper()) { state.tab = "overview"; return renderOverview(panel); }
   panel.innerHTML = `
     <div class="panel-head">
       <h2>${t("admins_title_count", { n: state.admins.filter(a => a.role === "dept_admin").length })}</h2>
@@ -1651,8 +1643,6 @@ async function deleteAdmin(id) {
 
 /* ------------------------- 16. SETTINGS ------------------------- */
 function renderSettings(panel) {
-  // حماية إضافية: هذا القسم للمشرف الرئيسي فقط
-  if (!isSuper()) { state.tab = "overview"; return renderOverview(panel); }
   const s = state.settings || {};
   panel.innerHTML = `
     <div class="panel-head"><h2>${t("settings_title")}</h2></div>
@@ -1831,11 +1821,9 @@ function installModal() {
 function refreshInstallButton() {
   const btn = $("#btnInstall");
   if (!btn) return;
-  // يبقى زر التثبيت ظاهراً دائماً ما لم يكن التطبيق مثبتاً بالفعل
-  const show = !isStandaloneMode();
+  const show = !isStandaloneMode() && (!!deferredInstallPrompt || isIOSDevice);
   btn.classList.toggle("hidden", !show);
 }
-window.installModal = installModal;
 
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
@@ -1850,8 +1838,6 @@ $("#btnInstall").onclick = async () => {
     if (outcome === "accepted") toast(t("msg_app_installed"));
     deferredInstallPrompt = null;
     refreshInstallButton();
-  } else if (typeof window.pwaHowto === "function") {
-    window.pwaHowto();
   } else if (isIOSDevice) {
     installModal();
   }
@@ -1881,154 +1867,14 @@ async function init() {
   applyBranding();
   renderStats();
   renderEvents();
-  if (state.session) { await loadMe(); await loadAdmins(); }
+  if (state.session) { await loadMe(); if (isSuper()) await loadAdmins(); }
   syncHeader();
 }
 init().catch(err => { console.error(err); toast(t("toast_db_error"), "err"); });
 
 db.auth.onAuthStateChange((event, session) => {
-  if (event === "SIGNED_OUT") { state.session = null; state.me = null; state.admins = []; syncHeader(); }
+  if (event === "SIGNED_OUT") { state.session = null; state.me = null; syncHeader(); }
 });
-</script>
-
-<!-- ====== PWA INSTALL BANNER (إضافة: دعوة تثبيت تلقائية عند الدخول) ====== -->
-<style>
-#pwaInstallBar{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;display:none;
-  align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:#ffffff;
-  color:#1b1533;box-shadow:0 12px 34px rgba(20,10,60,.28);border:1px solid rgba(109,51,224,.18);
-  font-family:Tajawal,Almarai,system-ui,sans-serif;max-width:560px;margin:0 auto}
-#pwaInstallBar.show{display:flex}
-#pwaInstallBar img{width:44px;height:44px;border-radius:12px;flex:0 0 auto}
-#pwaInstallBar .pwa-txt{flex:1;min-width:0;line-height:1.35}
-#pwaInstallBar .pwa-txt b{display:block;font-size:14px}
-#pwaInstallBar .pwa-txt span{font-size:12px;opacity:.72}
-#pwaInstallBar button{border:0;cursor:pointer;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px}
-#pwaInstallBar .pwa-yes{background:#6d33e0;color:#fff}
-#pwaInstallBar .pwa-no{background:transparent;color:#6b6580;padding:9px 6px}
-@media (prefers-color-scheme: dark){#pwaInstallBar{background:#1b1630;color:#f3f0ff}#pwaInstallBar .pwa-no{color:#b8b2cc}}
-</style>
-<div id="pwaInstallBar" class="no-print" role="dialog" aria-live="polite">
-  <img src="icons/icon-192.png" alt="ISCAE" />
-  <div class="pwa-txt">
-    <b class="pwa-title">ثبّت تطبيق ISCAE</b>
-    <span class="pwa-sub">أضف المنصة إلى شاشتك للوصول السريع دون متصفح.</span>
-  </div>
-  <button class="pwa-yes" type="button">تثبيت</button>
-  <button class="pwa-no" type="button" aria-label="إغلاق">لاحقاً</button>
-</div>
-<div id="pwaHowto" class="no-print" role="dialog" aria-modal="true">
-  <div class="pwa-card">
-    <b class="pwa-h"></b>
-    <ol class="pwa-steps"></ol>
-    <button class="pwa-ok" type="button"></button>
-  </div>
-</div>
-<style>
-#pwaHowto{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(15,8,35,.55);padding:16px;
-  font-family:Tajawal,Almarai,system-ui,sans-serif}
-#pwaHowto.show{display:flex}
-#pwaHowto .pwa-card{background:#fff;color:#1b1533;border-radius:18px;padding:20px;max-width:420px;width:100%;box-shadow:0 18px 50px rgba(20,10,60,.35)}
-#pwaHowto .pwa-h{display:block;font-size:17px;margin-bottom:10px}
-#pwaHowto .pwa-steps{margin:0 0 14px;padding-inline-start:20px;font-size:14px;line-height:1.9}
-#pwaHowto .pwa-ok{border:0;cursor:pointer;border-radius:10px;background:#6d33e0;color:#fff;font-weight:700;font-size:14px;padding:10px 16px;width:100%;font-family:inherit}
-@media (prefers-color-scheme: dark){#pwaHowto .pwa-card{background:#1b1630;color:#f3f0ff}}
-</style>
-<script>
-(function(){
-  var bar = document.getElementById("pwaInstallBar");
-  var howto = document.getElementById("pwaHowto");
-  if(!bar) return;
-  var yes = bar.querySelector(".pwa-yes"), no = bar.querySelector(".pwa-no");
-  var title = bar.querySelector(".pwa-title"), sub = bar.querySelector(".pwa-sub");
-  var deferred = null;
-  var ua = navigator.userAgent;
-  var isFr = function(){ return document.documentElement.getAttribute("lang") === "fr"; };
-  var isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
-  var isAndroid = /android/i.test(ua);
-  var isFirefox = /firefox|fxios/i.test(ua);
-  var isSamsung = /samsungbrowser/i.test(ua);
-  var standalone = function(){
-    return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  };
-  var dismissed = function(){
-    try { return localStorage.getItem("iscae-install-dismissed") === "1"; } catch(e){ return false; }
-  };
-  function texts(){
-    if(isFr()){
-      title.textContent = "Installer l'application ISCAE";
-      sub.textContent = "Ajoutez la plateforme à votre écran d'accueil.";
-      yes.textContent = deferred ? "Installer" : "Comment ?";
-      no.textContent = "Plus tard";
-    } else {
-      title.textContent = "ثبّت تطبيق ISCAE";
-      sub.textContent = "أضف المنصة إلى شاشتك للوصول السريع دون متصفح.";
-      yes.textContent = deferred ? "تثبيت" : "طريقة التثبيت";
-      no.textContent = "لاحقاً";
-    }
-  }
-  function show(){
-    if(standalone() || dismissed()) return;
-    texts();
-    bar.classList.add("show");
-  }
-  function hide(){ bar.classList.remove("show"); }
-
-  /* إرشادات يدوية لكل متصفح (تظهر عندما لا يوفّر المتصفح زر تثبيت تلقائي) */
-  function steps(){
-    if(isFr()){
-      if(isIOS) return ["Ouvrez le site dans Safari.","Touchez le bouton Partager.","Choisissez « Sur l'écran d'accueil ».","Confirmez avec « Ajouter »."];
-      if(isSamsung) return ["Ouvrez le menu du navigateur.","Choisissez « Ajouter la page à ».","Sélectionnez « Écran d'accueil »."];
-      if(isFirefox) return ["Ouvrez le menu (⋮).","Choisissez « Installer » ou « Ajouter à l'écran d'accueil »."];
-      if(isAndroid) return ["Ouvrez le menu (⋮) de Chrome.","Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »."];
-      return ["Ouvrez le site dans Chrome ou Edge.","Cliquez sur l'icône d'installation dans la barre d'adresse.","Ou menu (⋮) puis « Installer »."];
-    }
-    if(isIOS) return ["افتح الموقع بمتصفح Safari.","اضغط زر المشاركة (المربع مع السهم).","اختر «إضافة إلى الشاشة الرئيسية».","اضغط «إضافة» للتأكيد."];
-    if(isSamsung) return ["افتح قائمة المتصفح.","اختر «إضافة الصفحة إلى».","اختر «الشاشة الرئيسية»."];
-    if(isFirefox) return ["افتح القائمة (⋮).","اختر «تثبيت» أو «إضافة إلى الشاشة الرئيسية»."];
-    if(isAndroid) return ["افتح قائمة كروم (⋮).","اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»."];
-    return ["افتح الموقع بمتصفح Chrome أو Edge.","اضغط أيقونة التثبيت في شريط العنوان.","أو من القائمة (⋮) اختر «تثبيت»."];
-  }
-  function openHowto(){
-    if(!howto) return;
-    howto.querySelector(".pwa-h").textContent = isFr() ? "Comment installer l'application" : "طريقة تثبيت التطبيق";
-    howto.querySelector(".pwa-steps").innerHTML = steps().map(function(s){
-      var li = document.createElement("li"); li.textContent = s; return li.outerHTML;
-    }).join("");
-    howto.querySelector(".pwa-ok").textContent = isFr() ? "Compris" : "تم";
-    howto.classList.add("show");
-  }
-  window.pwaHowto = openHowto;
-  if(howto){
-    howto.querySelector(".pwa-ok").addEventListener("click", function(){ howto.classList.remove("show"); });
-    howto.addEventListener("click", function(e){ if(e.target === howto) howto.classList.remove("show"); });
-  }
-
-  window.addEventListener("beforeinstallprompt", function(e){
-    e.preventDefault();
-    deferred = e;
-    setTimeout(show, 800);
-  });
-
-  /* احتياط: إن لم يُطلق المتصفح حدث التثبيت التلقائي نعرض الدعوة مع الإرشادات اليدوية */
-  window.addEventListener("load", function(){ setTimeout(show, 2000); });
-
-  yes.addEventListener("click", async function(){
-    if(deferred){
-      hide();
-      deferred.prompt();
-      try { await deferred.userChoice; } catch(e){}
-      deferred = null;
-    } else {
-      hide();
-      openHowto();
-    }
-  });
-  no.addEventListener("click", function(){
-    hide();
-    try { localStorage.setItem("iscae-install-dismissed","1"); } catch(e){}
-  });
-  window.addEventListener("appinstalled", hide);
-})();
 </script>
 </body>
 </html>
