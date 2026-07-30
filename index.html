@@ -27,9 +27,7 @@
 <meta name="apple-mobile-web-app-title" content="ISCAE" />
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
@@ -1877,94 +1875,6 @@ init().catch(err => { console.error(err); toast(t("toast_db_error"), "err"); });
 db.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_OUT") { state.session = null; state.me = null; syncHeader(); }
 });
-</script>
-
-<!-- ====== PWA INSTALL BANNER (إضافة: دعوة تثبيت تلقائية عند الدخول) ====== -->
-<style>
-#pwaInstallBar{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;display:none;
-  align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:#ffffff;
-  color:#1b1533;box-shadow:0 12px 34px rgba(20,10,60,.28);border:1px solid rgba(109,51,224,.18);
-  font-family:Tajawal,Almarai,system-ui,sans-serif;max-width:560px;margin:0 auto}
-#pwaInstallBar.show{display:flex}
-#pwaInstallBar img{width:44px;height:44px;border-radius:12px;flex:0 0 auto}
-#pwaInstallBar .pwa-txt{flex:1;min-width:0;line-height:1.35}
-#pwaInstallBar .pwa-txt b{display:block;font-size:14px}
-#pwaInstallBar .pwa-txt span{font-size:12px;opacity:.72}
-#pwaInstallBar button{border:0;cursor:pointer;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px}
-#pwaInstallBar .pwa-yes{background:#6d33e0;color:#fff}
-#pwaInstallBar .pwa-no{background:transparent;color:#6b6580;padding:9px 6px}
-@media (prefers-color-scheme: dark){#pwaInstallBar{background:#1b1630;color:#f3f0ff}#pwaInstallBar .pwa-no{color:#b8b2cc}}
-</style>
-<div id="pwaInstallBar" class="no-print" role="dialog" aria-live="polite">
-  <img src="icons/icon-192.png" alt="ISCAE" />
-  <div class="pwa-txt">
-    <b class="pwa-title">ثبّت تطبيق ISCAE</b>
-    <span class="pwa-sub">أضف المنصة إلى شاشتك للوصول السريع دون متصفح.</span>
-  </div>
-  <button class="pwa-yes" type="button">تثبيت</button>
-  <button class="pwa-no" type="button" aria-label="إغلاق">لاحقاً</button>
-</div>
-<script>
-(function(){
-  var bar = document.getElementById("pwaInstallBar");
-  if(!bar) return;
-  var yes = bar.querySelector(".pwa-yes"), no = bar.querySelector(".pwa-no");
-  var title = bar.querySelector(".pwa-title"), sub = bar.querySelector(".pwa-sub");
-  var deferred = null;
-  var isFr = function(){ return document.documentElement.getAttribute("lang") === "fr"; };
-  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-  var standalone = function(){
-    return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  };
-  var dismissed = function(){
-    try { return localStorage.getItem("iscae-install-dismissed") === "1"; } catch(e){ return false; }
-  };
-  function texts(){
-    if(isFr()){
-      title.textContent = "Installer l'application ISCAE";
-      sub.textContent = isIOS ? "Partager puis « Sur l'écran d'accueil »." : "Ajoutez la plateforme à votre écran d'accueil.";
-      yes.textContent = isIOS ? "Comment ?" : "Installer";
-      no.textContent = "Plus tard";
-    } else {
-      title.textContent = "ثبّت تطبيق ISCAE";
-      sub.textContent = isIOS ? "اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»." : "أضف المنصة إلى شاشتك للوصول السريع دون متصفح.";
-      yes.textContent = isIOS ? "طريقة التثبيت" : "تثبيت";
-      no.textContent = "لاحقاً";
-    }
-  }
-  function show(){
-    if(standalone() || dismissed()) return;
-    texts();
-    bar.classList.add("show");
-  }
-  function hide(){ bar.classList.remove("show"); }
-
-  window.addEventListener("beforeinstallprompt", function(e){
-    e.preventDefault();
-    deferred = e;
-    setTimeout(show, 1200);
-  });
-
-  if(isIOS){ window.addEventListener("load", function(){ setTimeout(show, 1800); }); }
-
-  yes.addEventListener("click", async function(){
-    if(deferred){
-      hide();
-      deferred.prompt();
-      try { await deferred.userChoice; } catch(e){}
-      deferred = null;
-    } else if(isIOS && typeof window.installModal === "function"){
-      hide(); window.installModal();
-    } else {
-      hide();
-    }
-  });
-  no.addEventListener("click", function(){
-    hide();
-    try { localStorage.setItem("iscae-install-dismissed","1"); } catch(e){}
-  });
-  window.addEventListener("appinstalled", hide);
-})();
 </script>
 </body>
 </html>
