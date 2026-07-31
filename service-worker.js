@@ -1,51 +1,36 @@
-/* ISCAE 18ème Promotion — Service Worker
-   Minimal offline app-shell cache so the site qualifies as installable (PWA)
-   and the basic shell still loads if the network drops momentarily.
-   Data (Supabase calls) always goes to the network — never cached. */
+/* ISCAE 18 — Service Worker (شرط أساسي لقابلية التثبيت)
+   استراتيجية: الشبكة أولاً للصفحات، والذاكرة المؤقتة للملفات الثابتة. */
+const CACHE = "iscae18-v1";
+const SHELL = ["./", "./index.html", "./manifest.json",
+  "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
-const CACHE_NAME = "iscae18-shell-v1";
-const SHELL_FILES = [
-  "./",
-  "./index.html",
-  "./manifest.json"
-];
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(SHELL_FILES))
-      .catch(() => {})
-  );
+self.addEventListener("install", (e) => {
   self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).catch(() => {})));
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-
-  // Never intercept API/data calls (Supabase, fonts CDN, etc.) — network only.
-  if (req.method !== "GET" || !req.url.startsWith(self.location.origin)) return;
-
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
-  );
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
+  if (req.mode === "navigate") {
+    e.respondWith(fetch(req).then(r => {
+      const copy = r.clone();
+      caches.open(CACHE).then(c => c.put("./index.html", copy));
+      return r;
+    }).catch(() => caches.match("./index.html")));
+    return;
+  }
+  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
+    const copy = r.clone();
+    caches.open(CACHE).then(c => c.put(req, copy));
+    return r;
+  }).catch(() => hit)));
 });

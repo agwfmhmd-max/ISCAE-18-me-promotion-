@@ -1,17 +1,21 @@
 {
   "name": "ISCAE 18ème Promotion — منصة حفل التخرج",
   "short_name": "ISCAE 18",
-  "description": "منصة ISCAE 18ème Promotion لإدارة حفل التخرج: بحث الخريجين، التخصصات، الفئات، والعد التنازلي للحفلات.",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#f6f5fb",
-  "theme_color": "#6d33e0",
+  "description": "منصة ISCAE 18ème Promotion لإدارة حفل التخرج: بحث الخريجين، التخصصات، الفئات والعد التنازلي.",
   "lang": "ar",
   "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#6d33e0",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

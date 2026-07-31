@@ -427,6 +427,28 @@ html.dark .result-message{background:rgba(139,92,246,.10)}
 @media (max-width:520px){
   .lang-switch{width:38px;height:38px;font-size:11.5px}
 }
+
+/* ==========================================================================
+   PWA INSTALL BANNER
+   ========================================================================== */
+#installBanner{
+  position:fixed; inset-inline:12px; bottom:14px; z-index:80;
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:12px 14px; border-radius:18px;
+  background:linear-gradient(135deg,var(--violet-600),var(--violet-500));
+  color:#fff; box-shadow:0 18px 40px rgba(0,0,0,.28);
+  animation:instUp .35s ease both;
+}
+#installBanner.hidden{display:none}
+#installBanner .ib-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.18);flex:none}
+#installBanner .ib-txt{flex:1;min-width:150px;line-height:1.35}
+#installBanner .ib-txt b{display:block;font-size:15px;font-weight:900}
+#installBanner .ib-txt small{opacity:.9;font-size:12.5px}
+#installBanner .ib-actions{display:flex;gap:8px;align-items:center}
+#installBanner .ib-install{background:#fff;color:var(--violet-700);border:0;border-radius:12px;padding:9px 16px;font-weight:900;cursor:pointer;font-family:inherit}
+#installBanner .ib-close{background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;font-family:inherit}
+@keyframes instUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media print{#installBanner{display:none!important}}
 </style>
 </head>
 <body>
@@ -522,6 +544,17 @@ html.dark .result-message{background:rgba(139,92,246,.10)}
     <div>© <span id="footerYear">2026</span> ISCAE — <span id="footerPromoLabel">الدفعة 18</span></div>
   </div>
 </footer>
+
+<div id="installBanner" class="hidden no-print">
+  <div class="ib-ico">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12"/><polyline points="7 11 12 16 17 11"/><path d="M5 20h14"/></svg>
+  </div>
+  <div class="ib-txt"><b id="ibTitle">ثبّت التطبيق</b><small id="ibText">أضف المنصة إلى جهازك للوصول السريع.</small></div>
+  <div class="ib-actions">
+    <button class="ib-install" id="ibInstall">تثبيت الآن</button>
+    <button class="ib-close" id="ibClose">لاحقاً</button>
+  </div>
+</div>
 
 <div id="modals"></div>
 <div id="toasts"></div>
@@ -835,6 +868,20 @@ const I18N = {
   install_step3:{ar:"اضغط «إضافة» لتأكيد التثبيت",fr:"Appuyez sur « Ajouter » pour confirmer"},
   btn_install_now:{ar:"تثبيت الآن",fr:"Installer maintenant"},
   msg_app_installed:{ar:"تم تثبيت التطبيق بنجاح",fr:"Application installée avec succès"},
+  install_banner_title:{ar:"ثبّت تطبيق المنصة",fr:"Installez l'application"},
+  install_banner_text:{ar:"أضف المنصة إلى شاشتك الرئيسية للوصول السريع دون متصفح.",fr:"Ajoutez la plateforme à votre écran d'accueil pour un accès rapide."},
+  btn_later:{ar:"لاحقاً",fr:"Plus tard"},
+  install_modal_generic_text:{ar:"لتثبيت المنصة على جهازك، افتح قائمة المتصفح واتبع الخطوات التالية.",fr:"Pour installer la plateforme, ouvrez le menu du navigateur et suivez ces étapes."},
+  install_gstep1:{ar:"افتح قائمة المتصفح (⋮ أو ⋯)",fr:"Ouvrez le menu du navigateur (⋮ ou ⋯)"},
+  install_gstep2:{ar:"اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»",fr:"Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »"},
+  install_gstep3:{ar:"أكّد التثبيت",fr:"Confirmez l'installation"},
+  field_show_category_stats:{ar:"إظهار خانة عدد كل فئة في الصفحة الرئيسية",fr:"Afficher les compteurs de catégories sur la page d'accueil"},
+  graduates_counts_title:{ar:"أعداد الخريجين (اختياري)",fr:"Nombre de lauréats (optionnel)"},
+  graduates_counts_note:{ar:"اترك الحقول فارغة ليتم الحساب تلقائياً من قاعدة البيانات كما هو الحال الآن.",fr:"Laissez les champs vides pour un calcul automatique depuis la base de données, comme actuellement."},
+  field_total_graduates:{ar:"العدد الإجمالي للخريجين",fr:"Nombre total de lauréats"},
+  placeholder_auto:{ar:"تلقائي ({n})",fr:"Automatique ({n})"},
+  spec_counts_title:{ar:"عدد الخريجين لكل تخصص",fr:"Nombre de lauréats par spécialité"},
+  warn_settings_columns:{ar:"تم الحفظ جزئياً: أعمدة الإعدادات الجديدة غير موجودة في قاعدة البيانات. نفّذ ملف sql/settings-upgrade.sql ثم أعد المحاولة.",fr:"Enregistrement partiel : les nouvelles colonnes n'existent pas. Exécutez sql/settings-upgrade.sql puis réessayez."},
   err_create_admin_function:{ar:"تعذّر الاتصال بدالة create-admin",fr:"Impossible de contacter la fonction create-admin"},
   err_create_admin_generic:{ar:"فشل في إنشاء الحساب، تأكد من البيانات",fr:"Échec de la création du compte, vérifiez les informations"}
 };
@@ -944,6 +991,7 @@ function applyBranding() {
 /** Re-render everything that depends on language/branding without losing app state. */
 function refreshChrome() {
   applyLangAttrs();
+  refreshInstallButton();
   applyStaticI18n();
   applyBranding();
   renderStats();
@@ -1013,8 +1061,38 @@ async function loadMe() {
 }
 
 /* ------------------------- 7. PUBLIC PAGE RENDER ------------------------- */
+/** true when the super-admin entered a manual value (0 is a valid value). */
+function hasOverride(v) {
+  return v !== null && v !== undefined && v !== "" && isFinite(Number(v));
+}
+/** Manual per-specialty counts saved by the super admin ({specialty_id: number}). */
+function specialtyOverrides() {
+  const raw = (state.settings || {}).specialty_counts_override;
+  if (!raw) return {};
+  if (typeof raw === "string") { try { return JSON.parse(raw) || {}; } catch (e) { return {}; } }
+  return raw;
+}
+/** Real number of students of a specialty, as stored in the database. */
+function autoSpecialtyCount(specId) {
+  return state.students.filter(s => s.specialty_id === specId).length;
+}
+/** Displayed number for a specialty: manual value if defined, otherwise automatic. */
+function displaySpecialtyCount(specId) {
+  const ov = specialtyOverrides()[specId];
+  return hasOverride(ov) ? Number(ov) : autoSpecialtyCount(specId);
+}
+/** Displayed total of graduates: manual value if defined, otherwise automatic. */
+function displayTotalGraduates() {
+  const ov = (state.settings || {}).total_graduates_override;
+  return hasOverride(ov) ? Number(ov) : state.students.length;
+}
+/** Category counters are visible unless the super admin hides them. */
+function categoryStatsVisible() {
+  return (state.settings || {}).show_category_stats !== false;
+}
+
 function renderStats() {
-  const total = state.students.length;
+  const total = displayTotalGraduates();
   const specs = state.specialties.length;
   const cats  = { A: 0, B: 0, C: 0, D: 0 };
   state.students.forEach(s => cats[categoryOf(s.order_index)]++);
@@ -1022,13 +1100,14 @@ function renderStats() {
   $("#statsGrid").innerHTML = `
     ${statCard("c-violet", total, t("stat_graduate"), iconUsers)}
     ${statCard("c-emerald", specs, t("stat_specialty"), iconBook)}
-    ${statCard("c-indigo", cats.A + cats.B, t("stat_cat_ab"), iconStar)}
-    ${statCard("c-amber", cats.C + cats.D, t("stat_cat_cd"), iconStar)}
+    ${categoryStatsVisible() ? `
+      ${statCard("c-indigo", cats.A + cats.B, t("stat_cat_ab"), iconStar)}
+      ${statCard("c-amber", cats.C + cats.D, t("stat_cat_cd"), iconStar)}` : ""}
   `;
 
   $("#specGrid").innerHTML = state.specialties.length
     ? state.specialties.map(sp => {
-        const n = state.students.filter(s => s.specialty_id === sp.id).length;
+        const n = displaySpecialtyCount(sp.id);
         return `<div class="mini"><b>${n}</b><small>${esc(sp.name)}</small></div>`;
       }).join("")
     : `<div class="empty">${t("no_specialties_yet")}</div>`;
@@ -1644,6 +1723,7 @@ async function deleteAdmin(id) {
 /* ------------------------- 16. SETTINGS ------------------------- */
 function renderSettings(panel) {
   const s = state.settings || {};
+  const ovs = specialtyOverrides();
   panel.innerHTML = `
     <div class="panel-head"><h2>${t("settings_title")}</h2></div>
     <form id="setForm" class="stack" style="max-width:720px">
@@ -1662,12 +1742,36 @@ function renderSettings(panel) {
         <div class="field"><label>${t("field_cat_b")}</label><input name="cat_b_limit" type="number" min="0" value="${s.cat_b_limit ?? 100}" /></div>
         <div class="field"><label>${t("field_cat_c")}</label><input name="cat_c_limit" type="number" min="0" value="${s.cat_c_limit ?? 150}" /></div>
       </div>
+      <label class="row" style="gap:10px;align-items:center;cursor:pointer;font-weight:700">
+        <input type="checkbox" name="show_category_stats" ${s.show_category_stats === false ? "" : "checked"} style="width:18px;height:18px;accent-color:var(--violet-600)" />
+        <span>${t("field_show_category_stats")}</span>
+      </label>
+
+      <h3 style="font-weight:900;margin-top:8px">${t("graduates_counts_title")}</h3>
+      <p class="muted" style="font-size:13px;margin-top:-8px">${t("graduates_counts_note")}</p>
+      <div class="grid-2">
+        <div class="field">
+          <label>${t("field_total_graduates")}</label>
+          <input name="total_graduates_override" type="number" min="0" placeholder="${t("placeholder_auto", { n: state.students.length })}" value="${hasOverride(s.total_graduates_override) ? Number(s.total_graduates_override) : ""}" />
+        </div>
+      </div>
+      ${state.specialties.length ? `
+        <h4 style="font-weight:800">${t("spec_counts_title")}</h4>
+        <div class="grid-2">
+          ${state.specialties.map(sp => {
+            const ov = ovs[sp.id];
+            return `<div class="field">
+              <label>${esc(sp.name)}</label>
+              <input data-spec-count="${esc(sp.id)}" type="number" min="0" placeholder="${t("placeholder_auto", { n: autoSpecialtyCount(sp.id) })}" value="${hasOverride(ov) ? Number(ov) : ""}" />
+            </div>`;
+          }).join("")}
+        </div>` : ""}
       <button class="btn btn-primary" type="submit" style="align-self:flex-start">${t("btn_save_settings")}</button>
     </form>`;
   $("#setForm").onsubmit = async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
-    const payload = {
+    const basePayload = {
       id: 1,
       platform_name: f.platform_name.trim(),
       promotion_label: f.promotion_label.trim(),
@@ -1677,7 +1781,26 @@ function renderSettings(panel) {
       cat_b_limit: Number(f.cat_b_limit) || 0,
       cat_c_limit: Number(f.cat_c_limit) || 0
     };
-    const { error } = await db.from("settings").upsert(payload, { onConflict: "id" });
+    /* الحقول الجديدة: إخفاء الفئات + الأعداد اليدوية (فارغ = تلقائي كما كان) */
+    const specOverride = {};
+    $$("[data-spec-count]").forEach(inp => {
+      const v = inp.value.trim();
+      if (v !== "" && isFinite(Number(v))) specOverride[inp.dataset.specCount] = Number(v);
+    });
+    const totalRaw = (f.total_graduates_override ?? "").toString().trim();
+    const extraPayload = {
+      show_category_stats: !!f.show_category_stats,
+      total_graduates_override: totalRaw === "" ? null : Number(totalRaw),
+      specialty_counts_override: Object.keys(specOverride).length ? specOverride : null
+    };
+
+    let { error } = await db.from("settings").upsert({ ...basePayload, ...extraPayload }, { onConflict: "id" });
+    if (error && /column|schema cache|show_category_stats|total_graduates_override|specialty_counts_override/i.test(error.message || "")) {
+      /* الأعمدة الجديدة غير موجودة بعد: نحفظ الإعدادات القديمة كما كانت وننبّه المشرف. */
+      const retry = await db.from("settings").upsert(basePayload, { onConflict: "id" });
+      error = retry.error;
+      if (!error) toast(t("warn_settings_columns"), "err");
+    }
     if (error) { toast(t("err_save_failed", { msg: error.message }), "err"); return; }
     toast(t("msg_settings_saved"));
     await loadPublicData(); applyBranding(); renderStats(); renderEvents(); renderDash();
@@ -1799,8 +1922,10 @@ let deferredInstallPrompt = null;
 const isIOSDevice = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 const isStandaloneMode = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 
-function installModal() {
-  const steps = [t("install_step1"), t("install_step2"), t("install_step3")];
+function installModal(generic) {
+  const steps = generic
+    ? [t("install_gstep1"), t("install_gstep2"), t("install_gstep3")]
+    : [t("install_step1"), t("install_step2"), t("install_step3")];
   const m = openModal(`
     <div class="modal install-hint-modal" style="max-width:420px">
       <div class="modal-head">
@@ -1808,7 +1933,7 @@ function installModal() {
         <h3>${t("install_modal_title")}</h3>
       </div>
       <div class="modal-body">
-        <p class="muted">${t("install_modal_ios_text")}</p>
+        <p class="muted">${generic ? t("install_modal_generic_text") : t("install_modal_ios_text")}</p>
         <div class="steps">
           ${steps.map((s, i) => `<div class="step"><b>${i + 1}</b><span>${esc(s)}</span></div>`).join("")}
         </div>
@@ -1818,11 +1943,36 @@ function installModal() {
   m.querySelector("[data-close]").onclick = closeModals;
 }
 
+let installBannerDismissed = false;
+try { installBannerDismissed = sessionStorage.getItem("iscae-install-dismissed") === "1"; } catch (e) {}
+
+/** زر التثبيت في الأعلى + الشريط السفلي يظهران لكل زائر ما لم يكن التطبيق مثبتاً. */
 function refreshInstallButton() {
+  const show = !isStandaloneMode();
   const btn = $("#btnInstall");
-  if (!btn) return;
-  const show = !isStandaloneMode() && (!!deferredInstallPrompt || isIOSDevice);
-  btn.classList.toggle("hidden", !show);
+  if (btn) btn.classList.toggle("hidden", !show);
+  const banner = $("#installBanner");
+  if (banner) {
+    banner.classList.toggle("hidden", !(show && !installBannerDismissed));
+    const ti = $("#ibTitle"), tx = $("#ibText"), bi = $("#ibInstall"), bc = $("#ibClose");
+    if (ti) ti.textContent = t("install_banner_title");
+    if (tx) tx.textContent = t("install_banner_text");
+    if (bi) bi.textContent = t("btn_install_now");
+    if (bc) bc.textContent = t("btn_later");
+  }
+}
+
+/** تنفيذ التثبيت: نافذة المتصفح إن توفرت، وإلا شرح الخطوات. */
+async function triggerInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === "accepted") toast(t("msg_app_installed"));
+    deferredInstallPrompt = null;
+    refreshInstallButton();
+  } else {
+    installModal(!isIOSDevice);
+  }
 }
 
 window.addEventListener("beforeinstallprompt", (e) => {
@@ -1831,20 +1981,17 @@ window.addEventListener("beforeinstallprompt", (e) => {
   refreshInstallButton();
 });
 
-$("#btnInstall").onclick = async () => {
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === "accepted") toast(t("msg_app_installed"));
-    deferredInstallPrompt = null;
-    refreshInstallButton();
-  } else if (isIOSDevice) {
-    installModal();
-  }
+$("#btnInstall").onclick = triggerInstall;
+$("#ibInstall").onclick = triggerInstall;
+$("#ibClose").onclick = () => {
+  installBannerDismissed = true;
+  try { sessionStorage.setItem("iscae-install-dismissed", "1"); } catch (e) {}
+  refreshInstallButton();
 };
 
 window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null;
+  installBannerDismissed = true;
   refreshInstallButton();
   toast(t("msg_app_installed"));
 });
