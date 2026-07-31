@@ -40,32 +40,32 @@
 :root{
   --violet-50:#f3f0ff; --violet-100:#e9e3ff; --violet-300:#c4b4ff;
   --violet-500:#7c3aed; --violet-600:#6d33e0; --violet-700:#5b21b6;
-  --emerald:#0f9d70; --emerald-dark:#0b7a57;
-  --bg:#f6f5fb; --bg-2:#ffffff;
-  --surface:rgba(255,255,255,.72);
+  --emerald:#10b981; --emerald-dark:#059669;
+  --bg:#f8fafc; --bg-2:#ffffff;
+  --surface:rgba(255,255,255,.8);
   --surface-solid:#ffffff;
-  --stroke:rgba(124,58,237,.14);
-  --text:#171331; --muted:#6b6890;
-  --shadow-sm:0 4px 14px rgba(46,25,110,.06);
-  --shadow-md:0 14px 40px rgba(46,25,110,.10);
-  --shadow-lg:0 28px 70px rgba(46,25,110,.16);
-  --grad-primary:linear-gradient(135deg,#6d33e0 0%,#8b5cf6 55%,#a855f7 100%);
-  --grad-emerald:linear-gradient(135deg,#0b7a57 0%,#12a97a 100%);
-  --grad-soft:linear-gradient(180deg,#faf9ff 0%,#f2eeff 100%);
-  --radius:22px; --radius-sm:14px;
-  --ring:0 0 0 4px rgba(124,58,237,.16);
+  --stroke:rgba(124,58,237,.1);
+  --text:#0f172a; --muted:#64748b;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  --shadow-lg:0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  --grad-primary:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#d946ef 100%);
+  --grad-emerald:linear-gradient(135deg,#10b981 0%,#34d399 100%);
+  --grad-soft:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+  --radius:24px; --radius-sm:16px;
+  --ring:0 0 0 4px rgba(124,58,237,.2);
 }
 html.dark{
-  --bg:#0c0a1a; --bg-2:#120f24;
-  --surface:rgba(28,24,54,.66);
-  --surface-solid:#171334;
-  --stroke:rgba(168,139,255,.18);
-  --text:#f4f2ff; --muted:#a6a1c9;
-  --violet-50:#1a1636; --violet-100:#221c46;
-  --shadow-sm:0 4px 14px rgba(0,0,0,.35);
-  --shadow-md:0 16px 44px rgba(0,0,0,.45);
-  --shadow-lg:0 30px 80px rgba(0,0,0,.55);
-  --grad-soft:linear-gradient(180deg,#141029 0%,#0f0c20 100%);
+  --bg:#0f172a; --bg-2:#1e293b;
+  --surface:rgba(30,41,59,.7);
+  --surface-solid:#1e293b;
+  --stroke:rgba(148,163,184,0.1);
+  --text:#f8fafc; --muted:#94a3b8;
+  --violet-50:#1e1b4b; --violet-100:#312e81;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:0 10px 25px -5px rgba(0,0,0,0.4);
+  --shadow-lg:0 20px 25px -5px rgba(0,0,0,0.5);
+  --grad-soft:linear-gradient(180deg,#0f172a 0%,#020617 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -99,10 +99,14 @@ a{color:inherit;text-decoration:none}
 .container{width:100%;max-width:1180px;margin-inline:auto;padding-inline:18px}
 .glass{
   background:var(--surface);
-  backdrop-filter:blur(22px) saturate(150%);
+  backdrop-filter:blur(24px) saturate(180%);
   border:1px solid var(--stroke);
   border-radius:var(--radius);
   box-shadow:var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover {
+  box-shadow: var(--shadow-lg);
 }
 .stack{display:flex;flex-direction:column;gap:14px}
 .row{display:flex;align-items:center;gap:10px}
@@ -115,11 +119,12 @@ a{color:inherit;text-decoration:none}
    ========================================================================== */
 header.topbar{
   position:sticky; top:0; z-index:60;
-  background:color-mix(in oklab, var(--bg) 78%, transparent);
-  backdrop-filter:blur(18px) saturate(160%);
+  background:color-mix(in oklab, var(--bg) 85%, transparent);
+  backdrop-filter:blur(20px) saturate(180%);
   border-bottom:1px solid var(--stroke);
+  transition:all 0.3s ease;
 }
-.topbar-inner{display:flex;align-items:center;gap:12px;height:74px}
+.topbar-inner{display:flex;align-items:center;gap:16px;height:74px;padding:0 8px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-logo{
   width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
@@ -131,22 +136,26 @@ header.topbar{
 .brand-text b{font-size:16px;letter-spacing:.6px}
 .brand-text span{font-size:11px;color:var(--violet-500);font-weight:700;letter-spacing:1.4px}
 .icon-btn{
-  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
   background:var(--surface); border:1px solid var(--stroke);
-  transition:.22s; box-shadow:var(--shadow-sm);
+  transition:all 0.3s ease; box-shadow:var(--shadow-sm);
+  cursor:pointer;
 }
-.icon-btn:hover{transform:translateY(-2px);border-color:var(--violet-300)}
+.icon-btn:hover{transform:translateY(-3px) scale(1.08);border-color:var(--violet-500);box-shadow:var(--shadow-md)}
+.icon-btn:active{transform:scale(0.95)}
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:12px 20px;border-radius:16px;font-weight:700;font-size:14px;
-  transition:transform .2s, box-shadow .2s, opacity .2s; white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 24px;border-radius:18px;font-weight:700;font-size:14px;
+  transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); white-space:nowrap;
+  letter-spacing:0.3px;
 }
-.btn:active{transform:scale(.97)}
+.btn:active{transform:scale(0.96)}
 .btn-primary{background:var(--grad-primary);color:#fff;box-shadow:0 10px 26px rgba(109,51,224,.35)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(109,51,224,.42)}
 .btn-ghost{background:var(--surface);border:1px solid var(--stroke);color:var(--text)}
 .btn-ghost:hover{border-color:var(--violet-300)}
-.btn-emerald{background:var(--grad-emerald);color:#fff;box-shadow:0 10px 26px rgba(11,122,87,.3)}
+.btn-emerald{background:var(--grad-emerald);color:#fff;box-shadow:0 10px 26px rgba(16,185,129,.3)}
+.btn-emerald:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(16,185,129,.4)}
 .btn-danger{background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff}
 .btn-sm{padding:8px 14px;border-radius:12px;font-size:13px}
 .btn-block{width:100%}
@@ -154,15 +163,17 @@ header.topbar{
 /* ==========================================================================
    4. HERO
    ========================================================================== */
-.hero{padding:56px 0 26px;text-align:center;animation:fadeUp .7s ease both}
-.hero h1{font-size:clamp(30px,7vw,54px);font-weight:900;letter-spacing:-.5px;line-height:1.25}
+.hero{padding:64px 0 32px;text-align:center;animation:fadeUp .7s ease both}
+.hero h1{font-size:clamp(32px,8vw,60px);font-weight:900;letter-spacing:-1px;line-height:1.2;margin-bottom:16px}
 .hero h1 .grad{background:var(--grad-primary);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{margin-top:14px;font-size:clamp(15px,3.6vw,19px);color:var(--muted);max-width:640px;margin-inline:auto}
 .pill{
-  display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;
   background:var(--violet-50);border:1px solid var(--stroke);color:var(--violet-500);
   font-weight:700;font-size:13px;margin-bottom:18px;
+  transition:all 0.3s ease;
 }
+.pill:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(124,58,237,0.2)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 4px rgba(16,169,122,.18);animation:pulse 2s infinite}
 
 /* ==========================================================================
@@ -170,10 +181,12 @@ header.topbar{
    ========================================================================== */
 .stats-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:34px}
 .stat-card{
-  position:relative;overflow:hidden;border-radius:26px;padding:30px 24px;color:#fff;
-  min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;border-radius:30px;padding:32px 24px;color:#fff;
+  min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
   box-shadow:var(--shadow-lg); animation:fadeUp .7s ease both;
+  transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+.stat-card:hover{transform:translateY(-8px) scale(1.02)}
 .stat-card::after{
   content:'';position:absolute;width:230px;height:230px;border-radius:50%;
   background:rgba(255,255,255,.10); top:-70px; inset-inline-start:-70px;
@@ -192,7 +205,7 @@ header.topbar{
 /* ==========================================================================
    6. SEARCH
    ========================================================================== */
-.search-wrap{margin-top:40px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.search-wrap{margin-top:48px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--surface);padding:16px 20px;border-radius:28px;border:1px solid var(--stroke);box-shadow:var(--shadow-md)}
 .search-field{
   flex:1;min-width:220px;display:flex;align-items:center;gap:10px;
   background:var(--surface-solid);border:1px solid var(--stroke);border-radius:20px;
@@ -221,7 +234,8 @@ header.topbar{
 .section-title h2{font-size:clamp(24px,5.4vw,36px);font-weight:900}
 .section-title p{color:var(--muted);margin-top:6px}
 .events-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:28px}
-.event-card{border-radius:26px;overflow:hidden;box-shadow:var(--shadow-lg);animation:fadeUp .7s ease both}
+.event-card{border-radius:30px;overflow:hidden;box-shadow:var(--shadow-lg);animation:fadeUp .7s ease both;transition:transform 0.4s ease, box-shadow 0.4s ease}
+.event-card:hover{transform:translateY(-10px);box-shadow:var(--shadow-lg)}
 .event-top{position:relative;overflow:hidden;padding:26px;color:#fff;min-height:200px;display:flex;flex-direction:column;justify-content:space-between}
 .event-top::after{content:'';position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.09);inset-inline-start:-90px;bottom:-120px}
 .event-top .kicker{font-size:13px;opacity:.85;font-weight:700}
@@ -470,9 +484,7 @@ html.dark .result-message{background:rgba(139,92,246,.10)}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12"/><polyline points="7 11 12 16 17 11"/><path d="M5 20h14"/></svg>
     </button>
     <button class="icon-btn lang-switch no-print" id="btnLangToggle" title="Changer de langue / تغيير اللغة">FR</button>
-    <button class="icon-btn" id="btnTheme" title="الوضع الليلي" data-i18n-title="theme_tooltip">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
+    <button class="icon-btn" id="btnTheme" title="الوضع الليلي" data-i18n-title="theme_tooltip"></button>
     <div class="spacer"></div>
     <a href="#top" class="brand">
       <div class="brand-text center" style="align-items:flex-end">
@@ -491,6 +503,12 @@ html.dark .result-message{background:rgba(139,92,246,.10)}
         <div class="pill"><span class="dot"></span><span id="heroPillText">ISCAE 18ème Promotion</span></div>
         <h1><span data-i18n="hero_congrats">مبروك</span> <span class="grad" id="heroPromoLabel">الدفعة 18</span></h1>
         <p data-i18n="hero_subtitle">ابحث عن معلوماتك كخريج وتابع استعدادات حفل توزيع شهادات التكريم.</p>
+        <div id="heroInstall" class="hidden" style="margin-top: 24px; animation: fadeUp 0.8s ease 0.2s both;">
+          <button class="btn btn-emerald" id="btnHeroInstall" style="padding: 14px 28px; font-size: 16px; border-radius: 20px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12"/><polyline points="7 11 12 16 17 11"/><path d="M5 20h14"/></svg>
+            <span data-i18n="btn_install_now">تثبيت التطبيق الآن</span>
+          </button>
+        </div>
       </div>
 
       <!-- Search -->
@@ -944,14 +962,22 @@ function confirmDialog(title, text) {
 }
 
 /* ------------------------- 3. THEME ------------------------- */
+function updateThemeIcon() {
+  const isDark = document.documentElement.classList.contains("dark");
+  const btn = $("#btnTheme");
+  if (btn) btn.innerHTML = isDark ? iconSun : iconMoon;
+}
 function initTheme() {
   const saved = localStorage.getItem("iscae-theme");
-  if (saved === "dark" || (!saved && matchMedia("(prefers-color-scheme: dark)").matches))
+  if (saved === "dark" || (!saved && matchMedia("(prefers-color-scheme: dark)").matches)) {
     document.documentElement.classList.add("dark");
+  }
+  updateThemeIcon();
 }
 $("#btnTheme").onclick = () => {
   document.documentElement.classList.toggle("dark");
   localStorage.setItem("iscae-theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+  updateThemeIcon();
 };
 
 /* ------------------------- 3B. LANGUAGE (عربي / فرنسي) ------------------------- */
@@ -1116,7 +1142,8 @@ const iconUsers = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" s
 const iconBook  = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
 const iconStar  = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9.3 16.5 13.9 18.4 21 12 17 5.6 21 7.5 13.9 2 9.3 9 9"/></svg>`;
 const iconCap   = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>`;
-const iconMoon  = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const iconMoon  = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const iconSun   = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 
 function statCard(cls, num, lbl, icon) {
   return `<div class="stat-card ${cls}">
@@ -1951,6 +1978,8 @@ function refreshInstallButton() {
   const show = !isStandaloneMode();
   const btn = $("#btnInstall");
   if (btn) btn.classList.toggle("hidden", !show);
+  const heroBtn = $("#heroInstall");
+  if (heroBtn) heroBtn.classList.toggle("hidden", !show);
   const banner = $("#installBanner");
   if (banner) {
     banner.classList.toggle("hidden", !(show && !installBannerDismissed));
@@ -1967,10 +1996,13 @@ async function triggerInstall() {
   if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
     const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === "accepted") toast(t("msg_app_installed"));
-    deferredInstallPrompt = null;
-    refreshInstallButton();
+    if (outcome === "accepted") {
+      toast(t("msg_app_installed"));
+      deferredInstallPrompt = null;
+      refreshInstallButton();
+    }
   } else {
+    // If not supported directly, show instructions
     installModal(!isIOSDevice);
   }
 }
@@ -1982,6 +2014,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 $("#btnInstall").onclick = triggerInstall;
+$("#btnHeroInstall").onclick = triggerInstall;
 $("#ibInstall").onclick = triggerInstall;
 $("#ibClose").onclick = () => {
   installBannerDismissed = true;
