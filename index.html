@@ -1993,21 +1993,30 @@ function refreshInstallButton() {
 
 /** تنفيذ التثبيت: نافذة المتصفح إن توفرت، وإلا شرح الخطوات. */
 async function triggerInstall() {
+  console.log('[Install] triggerInstall called, deferredInstallPrompt:', !!deferredInstallPrompt);
   if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === "accepted") {
+    try {
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      console.log('[Install] Installation outcome:', outcome);
+      if (outcome === "accepted") {
+        toast(t("msg_app_installed"));
+        deferredInstallPrompt = null;
+        refreshInstallButton();
+      }
+    } catch (err) {
+      console.error('[Install] Error during installation:', err);
       toast(t("msg_app_installed"));
-      deferredInstallPrompt = null;
-      refreshInstallButton();
     }
   } else {
     // If not supported directly, show instructions
+    console.log('[Install] No deferredInstallPrompt, showing instructions');
     installModal(!isIOSDevice);
   }
 }
 
 window.addEventListener("beforeinstallprompt", (e) => {
+  console.log('[Install] beforeinstallprompt event fired');
   e.preventDefault();
   deferredInstallPrompt = e;
   refreshInstallButton();
@@ -2023,6 +2032,7 @@ $("#ibClose").onclick = () => {
 };
 
 window.addEventListener("appinstalled", () => {
+  console.log('[Install] App installed successfully');
   deferredInstallPrompt = null;
   installBannerDismissed = true;
   refreshInstallButton();
@@ -2031,8 +2041,19 @@ window.addEventListener("appinstalled", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    navigator.serviceWorker.register("./service-worker.js")
+      .then((registration) => {
+        console.log('[Service Worker] Registered successfully:', registration);
+        setInterval(() => {
+          registration.update();
+        }, 60000);
+      })
+      .catch((err) => {
+        console.error('[Service Worker] Registration failed:', err);
+      });
   });
+} else {
+  console.warn('[Service Worker] Not supported in this browser');
 }
 
 /* ------------------------- 19. BOOTSTRAP ------------------------- */
