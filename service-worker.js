@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'iscae-v4';
+const CACHE_VERSION = 'iscae-v5';
 const CACHE_ASSETS = [
   './',
   './index.html',
