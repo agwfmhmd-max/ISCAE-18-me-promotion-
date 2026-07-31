@@ -2041,37 +2041,39 @@ window.addEventListener("appinstalled", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js")
+    // Cache Busting: إضافة timestamp لإجبار جلب النسخة الأحدث
+    const swUrl = "./service-worker.js?v=" + Date.now();
+    
+    navigator.serviceWorker.register(swUrl)
       .then((registration) => {
-        console.log('[Service Worker] Registered successfully:', registration);
+        console.log('[Service Worker] Registered with cache busting:', swUrl);
         
-        // Check for updates every 30 seconds
+        // التحقق من التحديثات كل 5 ثوان
         setInterval(() => {
           console.log('[Service Worker] Checking for updates...');
           registration.update();
-        }, 30000);
+        }, 5000);
         
-        // Listen for updates
+        // الاستماع للتحديثات
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
-          console.log('[Service Worker] Update found, new worker installing...');
+          console.log('[Service Worker] Update found!');
           
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[Service Worker] New version available!');
+            if (newWorker.state === 'installed') {
+              console.log('[Service Worker] New version ready!');
               
-              // Show update notification
-              if (typeof toast === 'function') {
-                toast('تم تحديث التطبيق، يتم تحميل النسخة الجديدة...');
+              // تطبيق التحديث فوراً
+              if (navigator.serviceWorker.controller) {
+                console.log('[Service Worker] Activating new version immediately');
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
               }
               
-              // Tell the new service worker to skip waiting
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
-              
-              // Reload the page after a short delay to apply updates
+              // إعادة تحميل الصفحة
               setTimeout(() => {
+                console.log('[Service Worker] Reloading page');
                 window.location.reload();
-              }, 1000);
+              }, 500);
             }
           });
         });
@@ -2081,9 +2083,9 @@ if ("serviceWorker" in navigator) {
       });
   });
   
-  // Listen for controller change (when new service worker takes over)
+  // الاستماع لتغيير المتحكم
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('[Service Worker] Controller changed, new version is active');
+    console.log('[Service Worker] New controller is active');
   });
 } else {
   console.warn('[Service Worker] Not supported in this browser');
