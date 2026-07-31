@@ -2041,51 +2041,13 @@ window.addEventListener("appinstalled", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    // Cache Busting: إضافة timestamp لإجبار جلب النسخة الأحدث
-    const swUrl = "./service-worker.js?v=" + Date.now();
-    
-    navigator.serviceWorker.register(swUrl)
+    navigator.serviceWorker.register("./service-worker.js")
       .then((registration) => {
-        console.log('[Service Worker] Registered with cache busting:', swUrl);
-        
-        // التحقق من التحديثات كل 5 ثوان
-        setInterval(() => {
-          console.log('[Service Worker] Checking for updates...');
-          registration.update();
-        }, 5000);
-        
-        // الاستماع للتحديثات
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          console.log('[Service Worker] Update found!');
-          
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed') {
-              console.log('[Service Worker] New version ready!');
-              
-              // تطبيق التحديث فوراً
-              if (navigator.serviceWorker.controller) {
-                console.log('[Service Worker] Activating new version immediately');
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-              }
-              
-              // إعادة تحميل الصفحة
-              setTimeout(() => {
-                console.log('[Service Worker] Reloading page');
-                window.location.reload();
-              }, 500);
-            }
-          });
-        });
+        console.log('[Service Worker] Registered successfully');
       })
       .catch((err) => {
         console.error('[Service Worker] Registration failed:', err);
       });
-  });
-  
-  // الاستماع لتغيير المتحكم
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('[Service Worker] New controller is active');
   });
 } else {
   console.warn('[Service Worker] Not supported in this browser');
