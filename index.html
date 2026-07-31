@@ -2044,13 +2044,46 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js")
       .then((registration) => {
         console.log('[Service Worker] Registered successfully:', registration);
+        
+        // Check for updates every 30 seconds
         setInterval(() => {
+          console.log('[Service Worker] Checking for updates...');
           registration.update();
-        }, 60000);
+        }, 30000);
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('[Service Worker] Update found, new worker installing...');
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[Service Worker] New version available!');
+              
+              // Show update notification
+              if (typeof toast === 'function') {
+                toast('تم تحديث التطبيق، يتم تحميل النسخة الجديدة...');
+              }
+              
+              // Tell the new service worker to skip waiting
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+              
+              // Reload the page after a short delay to apply updates
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+          });
+        });
       })
       .catch((err) => {
         console.error('[Service Worker] Registration failed:', err);
       });
+  });
+  
+  // Listen for controller change (when new service worker takes over)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('[Service Worker] Controller changed, new version is active');
   });
 } else {
   console.warn('[Service Worker] Not supported in this browser');
