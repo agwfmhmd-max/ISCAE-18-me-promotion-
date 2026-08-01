@@ -463,6 +463,53 @@ html.dark .result-message{background:rgba(139,92,246,.10)}
 #installBanner .ib-close{background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;font-family:inherit}
 @keyframes instUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @media print{#installBanner{display:none!important}}
+
+/* --- New Custom Styles for Search & Chart --- */
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px; }
+.spec-card { 
+  background: var(--surface-solid); border: 1px solid var(--stroke); border-radius: 28px; 
+  padding: 24px; position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;
+}
+.spec-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--violet-300); }
+.spec-card::before { 
+  content: ''; position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; 
+  background: var(--card-color); opacity: 0.05; border-radius: 50%; filter: blur(30px); 
+}
+.spec-card-head { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; }
+.spec-card-num { font-size: 42px; font-weight: 900; color: var(--card-color); line-height: 1; }
+.spec-card-label { font-size: 16px; font-weight: 800; color: var(--text); margin-top: 4px; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.spec-card-progress { height: 8px; background: var(--bg); border-radius: 10px; overflow: hidden; margin-top: auto; border: 1px solid var(--stroke); }
+.spec-card-bar { height: 100%; background: var(--card-color); border-radius: 10px; width: 0; transition: width 1.5s ease-out; }
+
+/* Color Picker List */
+.color-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+.color-option { width: 34px; height: 34px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: .2s; position: relative; box-shadow: var(--shadow-sm); }
+.color-option:hover { transform: scale(1.1); }
+.color-option.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--bg-2); }
+.color-option.active::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 14px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.custom-color-input { width: 34px; height: 34px; border: 2px solid var(--stroke); border-radius: 10px; padding: 0; cursor: pointer; background: none; transition: .2s; }
+.custom-color-input:hover { border-color: var(--violet-500); }
+
+.result-card-new { margin-top: 24px; border-radius: 32px; overflow: hidden; background: var(--surface-solid); border: 1px solid var(--stroke); box-shadow: var(--shadow-lg); animation: fadeUp .6s cubic-bezier(0.16, 1, 0.3, 1) both; position: relative; }
+.result-card-new .banner { height: 100px; background: var(--grad-primary); position: relative; }
+.result-card-new .banner::after { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 57c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E"); opacity: 0.4; }
+.result-card-new .content { padding: 0 26px 26px; margin-top: -45px; position: relative; }
+.result-card-new .avatar-box { width: 90px; height: 90px; border-radius: 26px; background: var(--surface-solid); padding: 6px; box-shadow: var(--shadow-md); margin-bottom: 16px; }
+.result-card-new .avatar-inner { width: 100%; height: 100%; border-radius: 20px; background: var(--grad-soft); display: grid; place-items: center; font-size: 38px; font-weight: 900; color: var(--violet-600); border: 1px solid var(--stroke); }
+.result-card-new .name-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.result-card-new .name-row h3 { font-size: 28px; font-weight: 900; color: var(--text); line-height: 1.2; }
+.result-card-new .verify-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: #dcfce7; color: #166534; font-weight: 800; font-size: 13px; }
+html.dark .result-card-new .verify-badge { background: #064e3b; color: #d1fae5; }
+.result-card-new .congrats-msg { background: var(--violet-50); border-radius: 20px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border: 1px solid var(--stroke); }
+.result-card-new .congrats-msg .icon { font-size: 24px; }
+.result-card-new .congrats-msg p { font-weight: 700; color: var(--violet-700); font-size: 15px; }
+html.dark .result-card-new .congrats-msg p { color: var(--violet-300); }
+.result-card-new .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.result-card-new .detail-item { background: var(--bg); padding: 16px; border-radius: 20px; border: 1px solid var(--stroke); transition: .3s; }
+.result-card-new .detail-item:hover { border-color: var(--violet-300); transform: translateY(-2px); }
+.result-card-new .detail-item label { display: block; font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+.result-card-new .detail-item span { display: block; font-size: 16px; font-weight: 800; color: var(--text); }
 </style>
 </head>
 <body>
@@ -1131,11 +1178,24 @@ function renderStats() {
       ${statCard("c-amber", cats.C + cats.D, t("stat_cat_cd"), iconStar)}` : ""}
   `;
 
+  const maxCount = Math.max(...state.specialties.map(sp => displaySpecialtyCount(sp.id)), 1);
   $("#specGrid").innerHTML = state.specialties.length
-    ? state.specialties.map(sp => {
+    ? `<div class="chart-grid">` + state.specialties.map(sp => {
         const n = displaySpecialtyCount(sp.id);
-        return `<div class="mini"><b>${n}</b><small>${esc(sp.name)}</small></div>`;
-      }).join("")
+        const p = (n / maxCount) * 100;
+        const barColor = sp.color || '#7C3AED';
+        return `
+          <div class="spec-card" style="--card-color: ${barColor}">
+            <div class="spec-card-head">
+              <div class="spec-card-num">${n}</div>
+              <div class="badge" style="background:${barColor}20; color:${barColor}; border:1px solid ${barColor}30">${t("stat_graduate")}</div>
+            </div>
+            <div class="spec-card-label">${esc(sp.name)}</div>
+            <div class="spec-card-progress">
+              <div class="spec-card-bar" style="width: ${p}%"></div>
+            </div>
+          </div>`;
+      }).join("") + `</div>`
     : `<div class="empty">${t("no_specialties_yet")}</div>`;
 }
 const iconUsers = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>`;
@@ -1252,28 +1312,43 @@ async function doSearch() {
   }
   const cat = st.category || categoryOf(st.order_index);
   box.innerHTML = `
-  <div class="glass result-card">
-    <div class="result-head">
-      <div class="avatar">${esc((st.full_name || "•").trim()[0] || "•")}</div>
-      <div style="flex:1">
-        <div class="result-verified">✓ ${t("result_verified")}</div>
-        <div style="font-size:22px;font-weight:900">${esc(st.full_name)}</div>
-        <div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap">
-          <span class="badge">#${esc(st.registration_number)}</span>
-          <span class="badge">${t("label_category")} ${esc(cat)}</span>
-          <span class="badge">${t("label_order")} ${esc(st.order_index)}</span>
+  <div class="result-card-new">
+    <div class="banner"></div>
+    <div class="content">
+      <div class="avatar-box">
+        <div class="avatar-inner">${esc((st.full_name || "•").trim()[0] || "•")}</div>
+      </div>
+      <div class="name-row">
+        <div>
+          <div class="verify-badge">✓ ${t("result_verified")}</div>
+          <h3>${esc(st.full_name)}</h3>
+        </div>
+        <div class="row" style="gap:8px">
+          <span class="tag tag-A">#${esc(st.registration_number)}</span>
+          <span class="tag tag-B">${t("label_category")} ${esc(cat)}</span>
         </div>
       </div>
-    </div>
-    <div class="result-message"><span class="ico">🎓</span><span>${t("result_congrats", { promo: esc(promoLabel()) })}</span></div>
-    <div class="info-grid">
-      <div class="info-cell"><small>${t("label_specialty")}</small><b>${esc(st.specialty_name || "—")}</b></div>
-      <div class="info-cell"><small>${t("label_phone")}</small><b>${esc(st.phone || "—")}</b></div>
-      <div class="info-cell"><small>${t("label_sash_name")}</small><b>${esc(sashName(st) || "—")}</b></div>
-      <div class="info-cell"><small>${t("label_certificate_name")}</small><b>${esc(certName(st) || "—")}</b></div>
-      <div class="info-cell"><small>${t("label_order_in_specialty")}</small><b>${esc(st.order_index)}</b></div>
+      <div class="congrats-msg">
+        <span class="icon">🎓</span>
+        <p>${t("result_congrats", { promo: esc(promoLabel()) })}</p>
+      </div>
+      <div class="details-grid">
+        <div class="detail-item"><label>${t("label_specialty")}</label><span>${esc(st.specialty_name || "—")}</span></div>
+        <div class="detail-item"><label>${t("label_phone")}</label><span>${esc(st.phone || "—")}</span></div>
+        <div class="detail-item"><label>${t("label_sash_name")}</label><span>${esc(sashName(st) || "—")}</span></div>
+        <div class="detail-item"><label>${t("label_certificate_name")}</label><span>${esc(certName(st) || "—")}</span></div>
+        <div class="detail-item"><label>${t("label_order_in_specialty")}</label><span>${esc(st.order_index)}</span></div>
+      </div>
     </div>
   </div>`;
+  
+  // Scroll to result
+  setTimeout(() => {
+    const el = box.querySelector('.result-card-new');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 200);
 }
 $("#btnSearch").onclick = doSearch;
 $("#searchInput").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
@@ -1605,6 +1680,14 @@ function renderSpecialties(panel) {
 }
 
 function specModal(sp) {
+  const colors = [
+    "#7C3AED", "#6366F1", "#3B82F6", "#0EA5E9", "#06B6D4", "#14B8A6", 
+    "#10B981", "#22C55E", "#84CC16", "#EAB308", "#F59E0B", "#F97316", 
+    "#EF4444", "#F43F5E", "#EC4899", "#D946EF", "#A855F7", "#64748B"
+  ];
+  const currentColor = sp?.color || colors[0];
+  const isCustom = !colors.includes(currentColor.toUpperCase());
+  
   const m = openModal(`
     <div class="modal">
       <div class="modal-head"><h3>${sp ? t("specialty_modal_edit_title") : t("specialty_modal_add_title")}</h3></div>
@@ -1612,13 +1695,37 @@ function specModal(sp) {
         <div class="field"><label>${t("field_specialty_name_required")}</label><input name="name" required value="${esc(sp?.name || "")}" /></div>
         <div class="grid-2">
           <div class="field"><label>${t("th_code")}</label><input name="code" dir="ltr" value="${esc(sp?.code || "")}" /></div>
-          <div class="field"><label>${t("field_color")}</label><input name="color" type="color" value="${esc(sp?.color || "#7C3AED")}" /></div>
+          <div class="field">
+            <label>${t("field_color")}</label>
+            <input type="hidden" name="color" id="selectedColor" value="${esc(currentColor)}" />
+            <div class="color-list">
+              ${colors.map(c => `<div class="color-option ${c.toUpperCase() === currentColor.toUpperCase() ? 'active' : ''}" style="background:${c}" data-color="${c}"></div>`).join('')}
+              <input type="color" class="custom-color-input" id="customColorPicker" value="${isCustom ? currentColor : '#000000'}" title="لون مخصص" />
+            </div>
+          </div>
         </div>
         <div class="field"><label>${t("field_description")}</label><textarea name="description" rows="2">${esc(sp?.description || "")}</textarea></div>
         <button class="btn btn-primary btn-block" type="submit">${t("btn_save")}</button>
       </form>
       <div class="modal-foot"><button class="btn btn-ghost" data-close>${t("btn_cancel")}</button></div>
     </div>`);
+    
+  const colorInput = m.querySelector("#selectedColor");
+  const customPicker = m.querySelector("#customColorPicker");
+
+  m.querySelectorAll(".color-option").forEach(opt => {
+    opt.onclick = () => {
+      m.querySelectorAll(".color-option").forEach(o => o.classList.remove("active"));
+      opt.classList.add("active");
+      colorInput.value = opt.dataset.color;
+    };
+  });
+
+  customPicker.oninput = (e) => {
+    m.querySelectorAll(".color-option").forEach(o => o.classList.remove("active"));
+    colorInput.value = e.target.value;
+  };
+
   m.querySelector("[data-close]").onclick = closeModals;
   m.querySelector("#spForm").onsubmit = async e => {
     e.preventDefault();
